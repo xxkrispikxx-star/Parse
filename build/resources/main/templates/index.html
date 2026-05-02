@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Price Tracker 2026</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: #e0e0e0; display: flex; justify-content: center; padding: 40px; margin: 0; }
+        .container { width: 100%; max-width: 900px; }
+        .header { text-align: center; margin-bottom: 40px; }
+        h1 { color: #ff0055; text-transform: uppercase; letter-spacing: 2px; }
+        .search-container { background: #1e1e1e; padding: 20px; border-radius: 12px; display: flex; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); margin-bottom: 30px; }
+        input { flex: 1; padding: 15px; border-radius: 8px; border: 1px solid #333; background: #2a2a2a; color: white; font-size: 16px; }
+        button { padding: 0 25px; background: #ff0055; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #ff3377; transform: translateY(-2px); }
+        .card { background: #1e1e1e; padding: 25px; border-radius: 12px; border-left: 6px solid #00ff99; margin-bottom: 40px; animation: fadeIn 0.5s ease-in; }
+        table { width: 100%; border-collapse: collapse; background: #1e1e1e; border-radius: 12px; overflow: hidden; }
+        th { background: #2a2a2a; padding: 15px; text-align: left; color: #ff0055; }
+        td { padding: 15px; border-bottom: 1px solid #333; }
+        .price-tag { color: #00ff99; font-weight: bold; font-size: 1.2em; }
+        .like-btn { background: none; border: 1px solid #ff0055; color: #ff0055; padding: 8px 15px; cursor: pointer; border-radius: 5px; margin-top: 10px; }
+        .like-btn:hover { background: #ff0055; color: white; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Price Tracker v2.0</h1>
+        <p>Вбей товар — я найду лучшую цену и сохраню её в историю</p>
+    </div>
+
+    <div class="search-container">
+        <input type="text" name="query" id="searchInput" placeholder="Название товара..." required>
+        <button hx-get="/search"
+                hx-include="#searchInput"
+                hx-target="#mainContent"
+                hx-swap="innerHTML">
+            Найти
+        </button>
+    </div>
+
+    <div id="mainContent">
+        <div th:fragment="results_and_history">
+
+            <div th:if="${product}" class="card">
+                <h2 th:text="${product.name}">Название товара</h2>
+                <p>Минимальная цена сейчас: <span class="price-tag" th:text="${product.price}">0 грн</span></p>
+                <a th:href="${product.link}" target="_blank" style="color: #3498db; text-decoration: none;">🔗 Ссылка на Hotline</a>
+                <br>
+                <button class="like-btn"
+                        hx-get="/like"
+                        th:hx-vals="'{&quot;name&quot;: &quot;' + ${product.name} + '&quot;}'"
+                        hx-target="#mainContent">
+                    ❤ В избранное
+                </button>
+            </div>
+
+            <h3>⭐ Моё хранилище (Избранное)</h3>
+            <div id="historyArea">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Товар</th>
+                        <th>Лучшая цена</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="entry : ${history}">
+                        <td th:text="${entry.date}">Дата</td>
+                        <td th:text="${entry.name}">Название</td>
+                        <td class="price-tag" th:text="${entry.price}">Цена</td>
+                        <td>
+                            <button hx-get="/like"
+                                    th:hx-vals="'{&quot;name&quot;: &quot;' + ${entry.name} + '&quot;}'"
+                                    hx-target="#mainContent"
+                                    style="background:none; border:none; cursor:pointer;">❌</button>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(history)}">
+                        <td colspan="4" style="text-align: center; padding: 30px;">Тут пока пусто. Лайкни что-нибудь!</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
