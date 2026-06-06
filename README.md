@@ -14,4 +14,4 @@ This is my project for the Java Internship. I wanted to make a tool that helps t
 * **HTMX** (to make the UI feel smoother).
 
 ### Why I made it this way:
-I'm 16 and currently studying in college. I chose SQLite because it's simple to set up, and HTMX because I wanted to learn how to make a dynamic site without a lot of complex JavaScript. 
+I chose SQLite because it's simple to set up, and HTMX because I wanted to learn how to make a dynamic site without a lot of complex JavaScript. 
